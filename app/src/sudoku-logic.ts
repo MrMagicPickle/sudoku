@@ -448,6 +448,21 @@ const prettyPrintGrid = (grid: number[][]): void => {
   });
 }
 
+const buildGridFromPuzzle = (puzzle: number[]): number[][] => {
+  let count = 0;
+  const grid: number[][] = [];
+  for (let i = 0; i<9; i++) {
+    const gridArr = [];
+    for (let j = 0; j<9; j++) {
+      /* Have to +1 here bc the puzzle generator generates numbers from [0..8] */
+      gridArr.push(puzzle[count] + 1);
+      count += 1;
+    }
+    grid.push(gridArr);
+  }
+  return grid;
+}
+
 const buildHints = (puzzle: number[]): {
   hintGroups: Record<string, number[][]>,
   hintValuesPerGroup: Record<string, number>,
@@ -589,4 +604,5 @@ export {
   makepuzzle,
   solvepuzzle,
   buildHints,
+  buildGridFromPuzzle,
 };
