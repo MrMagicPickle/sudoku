@@ -410,7 +410,7 @@ const prettyPrint = (puzzle) => {
     console.log(arr.join(','));
   }
 }
-prettyPrint(puzzleCompleted, '<< puzzle');
+// prettyPrint(puzzleCompleted, '<< puzzle');
 
 const getRow = (index) => {
   return Math.floor(index / 9);
@@ -434,16 +434,32 @@ const getRandomInt = (max) => {
   return Math.floor(Math.random() * max);
 }
 
+const prettyPrintGrid = (grid) => {
+  grid.forEach((row) => {
+    console.log(row.join(','));
+  });
+}
+
 const buildHints = (puzzle) => {
+  /* Keep track of visited cells for hint generation */
   const visited = [];
 
+  /* 2D Grid creation based on 1-D Puzzle. */
+  let count = 0;
+  const grid = [];
   for (let i = 0; i<9; i++) {
-    const arr = [];
+    const visitedArr = [];
+    const gridArr = [];
     for (let j = 0; j<9; j++) {
-      arr.push(false);
+      visitedArr.push(false);
+      /* Have to +1 here bc the puzzle generator generates numbers from [0..8] */
+      gridArr.push(puzzle[count] + 1);
+      count += 1;
     }
-    visited.push(arr);
+    visited.push(visitedArr);
+    grid.push(gridArr);
   }
+  prettyPrintGrid(grid);
 
   let numberOfHints = 16;
   /**
@@ -516,6 +532,12 @@ const buildHints = (puzzle) => {
 
       /* Grow the hint chain by one. */
       const possibleExtensions = gatherPossibleExtensions(hintChain);
+
+      /* There's a chance that theres no possible cells to grow left,
+         so just leave the hint chain not fully grown. */
+      if (possibleExtensions.length <= 0) {
+        return;
+      }
       const randomIndex = getRandomInt(possibleExtensions.length);
       const newChainCellCoord = possibleExtensions[randomIndex];
       const [x, y] = newChainCellCoord;
@@ -526,6 +548,17 @@ const buildHints = (puzzle) => {
     });
   }
 
+  /* Calculate hint value per hint group */
+  const hintValuesPerGroup = {};
+  Object.entries(hintGroups).forEach(([key, hintChain]) => {
+    hintValuesPerGroup[key] = hintChain.reduce((acc, currCoord) => {
+      const [x, y] = currCoord;
+      const number = grid[x][y];
+      console.log(key, number, x, y);
+      return acc + number;
+    }, 0);
+  });
+  console.log(hintValuesPerGroup, '<< hint values');
   return hintGroups;
 }
 console.log(buildHints(puzzleCompleted));
