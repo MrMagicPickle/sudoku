@@ -12,9 +12,9 @@ function Sudoku() {
   console.log(JSON.stringify(hintGroups), '<< hg');
   console.log(JSON.stringify(hintValuesPerGroup), '<< hvpg');
 
-  const render = () => {
+  const renderGrid = () => {
     /* Convert to quadrants */
-    const quadrantsToCells: Record<string, number[]> = {};
+    const quadrantsToCells: Record<string, number[][]> = {};
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
         // Ranges from [0..2]
@@ -22,9 +22,12 @@ function Sudoku() {
         const quadCol = Math.floor(j / 3);
         const cellsInQuad = quadrantsToCells[`${quadRow}-${quadCol}`];
 
+        const cellNumber = grid[i][j];
+        const cellX = i;
+        const cellY = j;
         quadrantsToCells[`${quadRow}-${quadCol}`] = cellsInQuad ?
-          [...cellsInQuad, grid[i][j]] :
-          [grid[i][j]];
+          [...cellsInQuad, [cellNumber, cellX, cellY]] :
+          [[cellNumber, cellX, cellY]];
       }
     }
 
@@ -32,28 +35,34 @@ function Sudoku() {
       return <div className="quadrant" key={`quad-${index}`}>
         {
           value.map((cell, index) => {
-            return <div className="cell" key={`cell-${index}`}>{ cell }</div>
+            return <div id={`cell-${cell[1]}-${cell[2]}`} className="cell" key={`cell-${index}`}>{ cell[0] }</div>
           })
         }
       </div>
     });
     return divQuads;
-
-    return grid.map((row, rowIndex) => {
-      return <div className="row" key={rowIndex}>
-        {
-          row.map((cell, colIndex) => {
-            return <div className="cell" key={`cell-${rowIndex}-${colIndex}`}>{ cell }</div>
-          })
-        }
-      </div>
-    });
   }
 
+  const renderHints = () => {
+    const hintKey = Object.keys(hintGroups)[0];
+    const hintValues = hintValuesPerGroup[hintKey];
+    const hintGroup = hintGroups[hintKey];
+    console.log(hintValues, hintGroup, '<< hintValues, hintGroup');
+
+    const [x, y] = hintGroup[0];
+    const cell = document.getElementById(`cell-${x}-${y}`);
+    const rect = cell?.getBoundingClientRect();
+    console.log(rect, '<< rect');
+    return <div className="hint" style={{ top: `${rect?.top}px`, left: `${rect?.left}px`}}></div>
+
+  }
+
+  renderHints();
   return (
     <>
       <div className='grid-container'>
-      { render() }
+        { renderGrid() }
+        { renderHints() }
       </div>
     </>
 
