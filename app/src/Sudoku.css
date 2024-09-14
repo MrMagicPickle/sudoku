@@ -1,13 +1,32 @@
-
+/* TO remove */
 .row {
   display: flex;
 }
 
+.quadrant {
+  border: 2px solid black;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .cell {
   border: 1px solid black;
+  box-sizing: border-box;
   width: 40px;
   height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
+}
+
+.grid-container {
+  margin-top: 20px;
+  display: inline-flex;
+  border: 2px solid black;
+  width: 372px;
+  height: 372px;
+  flex-wrap: wrap;
 }

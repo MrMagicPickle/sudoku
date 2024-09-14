@@ -8,6 +8,9 @@ function App() {
     <div className="App">
       {/* <Sudoku puzzle={[[1,2,3], [4,5,8]]}/> */}
       <Sudoku/>
+      {/* <div id="canvas-container">
+        <Canvas />
+      </div> */}
     </div>
   );
 }
