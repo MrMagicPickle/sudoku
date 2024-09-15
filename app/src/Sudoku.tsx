@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { buildGridFromPuzzle, buildHints, makepuzzle, solvepuzzle } from "./sudoku-logic";
 import './Sudoku.css';
 
@@ -43,19 +44,30 @@ function Sudoku() {
     return divQuads;
   }
 
+  /* Sample of creating a single hint box. */
   const renderHints = () => {
+    return <div id="hint-1" className="hint"></div>
+  }
+
+  /* We need to move the hint into the correct position AFTER the grid is rendered. */
+  useEffect(() => {
     const hintKey = Object.keys(hintGroups)[0];
     const hintValues = hintValuesPerGroup[hintKey];
     const hintGroup = hintGroups[hintKey];
     console.log(hintValues, hintGroup, '<< hintValues, hintGroup');
 
     const [x, y] = hintGroup[0];
-    const cell = document.getElementById(`cell-${x}-${y}`);
+    const id = `cell-${x}-${y}`;
+    const cell = document.getElementById(id);
     const rect = cell?.getBoundingClientRect();
-    console.log(rect, '<< rect');
-    return <div className="hint" style={{ top: `${rect?.top}px`, left: `${rect?.left}px`}}></div>
+    console.log(id, x,y, '<< x,y');
+    console.log(cell, '<< cell');
+    console.log(rect, '<< rect ---');
 
-  }
+    const hint = document.getElementById('hint-1');
+    hint?.style.setProperty('top', `${rect?.top}px`);
+    hint?.style.setProperty('left', `${rect?.left}px`);
+  }, []);
 
   renderHints();
   return (
