@@ -2,12 +2,15 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Sudoku from './Sudoku';
-
+import InstantDB from './InstantDB';
+import Home from './Home';
 function App() {
   return (
     <div className="App">
-      {/* <Sudoku puzzle={[[1,2,3], [4,5,8]]}/> */}
-      <Sudoku/>
+      {/* <Sudoku/> */}
+      {/* <InstantDB/> */}
+      <Home/>
+
       {/* <div id="canvas-container">
         <Canvas />
       </div> */}

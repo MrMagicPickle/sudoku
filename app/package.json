@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@instantdb/react": "^0.12.37",
     "@react-three/fiber": "^8.17.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
