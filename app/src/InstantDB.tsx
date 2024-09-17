@@ -12,6 +12,7 @@ const db = init<Schema>({ appId: APP_ID })
 
 function App() {
   // Read Data
+  console.log(db, '<< db');
   const { isLoading, error, data } = db.useQuery({ todos: {} })
   if (isLoading) {
     return <div>Fetching data...</div>

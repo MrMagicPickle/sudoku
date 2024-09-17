@@ -1,5 +1,9 @@
 import { init, tx, id } from "@instantdb/react"
+import { useNavigate } from "react-router-dom";
 import { isCommaListExpression } from "typescript";
+import getDb from "./db";
+import { buildHints, makepuzzle, solvepuzzle } from "./sudoku-logic";
+import { mapPuzzleArrayToPuzzleDict } from "./mapper";
 
 /**
  * Have a UI to create sudoku room.
@@ -32,25 +36,40 @@ type Schema = {
 const db = init<Schema>({ appId: APP_ID });
 
 function Home() {
+  const navigate = useNavigate();
 
-  const createRoom = () => {
+  const createRoom = async () => {
     console.log('Create room');
     const roomId = id();
-    db.transact(
+    /* Create puzzle and hints */
+    const completedPuzzle = solvepuzzle(Array(81).fill(null))!;
+    const initialPuzzleState = makepuzzle(completedPuzzle);
+    const {
+      hintGroups,
+      hintValuesPerGroup,
+    } = buildHints(completedPuzzle);
+
+    /* Map array puzzle to 81 entries dictionary. */
+    const completedPuzzleDict = mapPuzzleArrayToPuzzleDict(completedPuzzle);
+    const initialPuzzleStateDict = mapPuzzleArrayToPuzzleDict(initialPuzzleState);
+
+    await db.transact(
       [
         tx.sudokuRoom[roomId].update({
-          completedPuzzle: {x: 1},
-          hintGroups: {x: [[1,2]]},
-          hintValuesPerGroup: {x: 1},
-          initialState: {x: null},
+          completedPuzzle: completedPuzzleDict,
+          hintGroups: hintGroups,
+          hintValuesPerGroup: hintValuesPerGroup,
+          initialState: initialPuzzleStateDict,
           isCompleted: false,
         }),
         tx.sudokuGameState[id()].update({
-          boardState: {x: null},
+          boardState: initialPuzzleStateDict,
           failCount: 0,
         }).link({sudokuRoom: roomId}),
       ]
     );
+    navigate(`/room/${roomId}`);
+
   }
 
   return (
