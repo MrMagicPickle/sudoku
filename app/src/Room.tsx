@@ -118,6 +118,56 @@ function Room() {
     ]);
   }
 
+  /* Sample of creating a single hint box. */
+  const renderHints = () => {
+    if (!data) {
+      return;
+    }
+
+    const { hintGroups, hintValuesPerGroup } = data.sudokuRoom[0] || {};
+
+    /* Iterates through each hint group */
+    const hintCellDivs = Object.keys(hintGroups).flatMap(hintKey => {
+      const hintValues = hintValuesPerGroup[hintKey];
+      const hintGroup = hintGroups[hintKey];
+      /* For each group, iterates through each hint cell and returns a div. */
+      return hintGroup.map(([x, y]) => {
+        /* TODO: Add hint group to id? */
+        return <div
+            key={`hint-${x}-${y}`}
+            id={`hint-${x}-${y}`}
+            className="hint"
+          >
+          </div>
+      });
+    });
+    return hintCellDivs;
+  }
+
+  /* We need to move the hint into the correct position AFTER the grid is rendered. */
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    const { hintGroups, hintValuesPerGroup } = data.sudokuRoom[0] || {};
+
+    for (const hintKey of Object.keys(hintGroups)) {
+      const hintValues = hintValuesPerGroup[hintKey];
+      const hintGroup = hintGroups[hintKey];
+
+      hintGroup.forEach(([x, y], index) => {
+        const id = `cell-${x}-${y}`;
+        const cell = document.getElementById(id);
+        const rect = cell?.getBoundingClientRect();
+        const hint = document.getElementById(`hint-${x}-${y}`);
+        hint?.style.setProperty('top', `${rect?.top}px`);
+        hint?.style.setProperty('left', `${rect?.left}px`);
+      });
+    }
+  }, [data]);
+
+
   const renderGrid = () => {
     if (!data) {
       return;
@@ -172,6 +222,7 @@ function Room() {
     <p> Room: { roomId } </p>
     <div className='grid-container'>
       { renderGrid() }
+      { renderHints() }
     </div>
   </>)
 }

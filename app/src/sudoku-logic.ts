@@ -404,8 +404,6 @@ function removeElement(array: any, from: number, to?: number) {
 
 const puzzleCompleted = solvepuzzle(Array(81).fill(null));
 const result = makepuzzle(puzzleCompleted!);
-console.log(puzzleCompleted, '<< puzzle');
-console.log(result, '<< result');
 
 const prettyPrint = (puzzle: number[]) => {
   let count = 0;
@@ -580,17 +578,14 @@ const buildHints = (puzzle: number[]): {
     hintValuesPerGroup[key] = hintChain.reduce((acc, currCoord) => {
       const [x, y] = currCoord;
       const number = grid[x][y];
-      console.log(key, number, x, y);
       return acc + number;
     }, 0);
   });
-  console.log(hintValuesPerGroup, '<< hint values');
   return {
     hintGroups,
     hintValuesPerGroup,
   }
 }
-console.log(buildHints(puzzleCompleted!));
 
 // export {
 //   createPuzzle: function () {
