@@ -20,6 +20,8 @@
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  cursor: pointer;
+  caret-color: transparent;
 }
 
 .grid-container {
