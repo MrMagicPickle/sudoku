@@ -33,14 +33,13 @@ function Room() {
     if (!targetCell.current) {
       return;
     }
-    event.preventDefault();
+    // event.preventDefault();
   }
   const handleKeyUp = (event: KeyboardEvent) => {
-    console.log(targetCell.current, '<< curent');
     if (!targetCell.current) {
       return;
     }
-    event.preventDefault();
+    // event.preventDefault();
     let targetValue: number | null | undefined = undefined;
     switch (event.key) {
       case 'Backspace':
@@ -77,14 +76,10 @@ function Room() {
     if (targetValue === undefined) {
       return;
     }
-    console.log('setting inner texxt');
+    /* Set cell value display */
     targetCell.current.innerText = targetValue ? targetValue.toString() : '';
 
-    /* Update game state */
-    window.clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      updateGameState(targetCellCoordKey.current!, targetValue!);
-    }, 1000);
+    updateGameState(targetCellCoordKey.current!, targetValue!);
   }
 
   const setTargetCell = (x: number, y: number) => {
@@ -97,7 +92,6 @@ function Room() {
 
   const clearTargetCell = () => {
     targetCellCoordKey.current = null;
-
     if (!targetCell.current) {
       return;
     }
@@ -113,7 +107,7 @@ function Room() {
 
     const { sudokuRoom } = data;
     const { sudokuGameState } = sudokuRoom[0];
-    const { id, boardState } = sudokuGameState[0];
+    const { id } = sudokuGameState[0];
 
     db.transact([
       tx.sudokuGameState[id].merge({
@@ -152,12 +146,12 @@ function Room() {
       }
     }
 
-    const divQuads = Object.entries(quadrantsToCells).map(([key, value], index) => {
-      return <div className="quadrant" key={`quad-${index}`}>
+    const divQuads = Object.entries(quadrantsToCells).map(([key, value], quadIndex) => {
+      return <div className="quadrant" key={`quad-${quadIndex}`}>
         {
           value.map((cell, index) => {
             return <div
-              contentEditable
+              tabIndex={quadIndex * 9 + index}
               onBlur={clearTargetCell}
               onClick={() => setTargetCell(cell[1]!, cell[2]!)}
               id={`cell-${cell[1]}-${cell[2]}`}
