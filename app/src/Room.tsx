@@ -129,10 +129,10 @@ function Room() {
 
     /* Iterates through each hint group */
     const hintCellDivs = Object.keys(hintGroups).flatMap(hintKey => {
-      const hintValues = hintValuesPerGroup[hintKey];
+      const hintValue = hintValuesPerGroup[hintKey];
       const hintGroup = hintGroups[hintKey];
       /* For each group, iterates through each hint cell and returns a div. */
-      return hintGroup.map(([x, y]) => {
+      return hintGroup.map(([x, y], index) => {
         /* TODO: Add hint group to id? */
 
         const dirs = [
@@ -195,6 +195,10 @@ function Room() {
               ...borderStyle,
             }}
           >
+            { index === 0 ?
+              <p>{ hintValue }</p> :
+              null
+            }
           </div>
       });
     });
