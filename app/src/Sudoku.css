@@ -35,10 +35,12 @@
 
 .hint {
   position: absolute;
-  border: 3px solid red;
-  width: 35px;
-  height: 35px;
+  border: 2px dashed red;
+  width: 32px;
+  height: 32px;
   pointer-events: none;
+  /* Use translate to center hint boxes */
+  transform: translate(2px, 2px);
 }
 
 /* Chrome, Safari, Edge, Opera */

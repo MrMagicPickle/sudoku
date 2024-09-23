@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { init, tx } from "@instantdb/react";
 import './Sudoku.css';
 import { debounce } from "./debounce";
+import { arrayContainsArray } from "./utils";
 
 // const db = getDb();
 const db = init<Schema>({ appId: APP_ID });
@@ -133,10 +134,66 @@ function Room() {
       /* For each group, iterates through each hint cell and returns a div. */
       return hintGroup.map(([x, y]) => {
         /* TODO: Add hint group to id? */
+
+        const dirs = [
+          [0, 1],
+          [1, 0],
+          [0, -1],
+          [-1, 0],
+        ];
+
+        let borderStyle = {};
+        const paddingValue = '2px';
+        for (const [dX, dY] of dirs) {
+          const [newX, newY] = [x+dX, y+dY];
+          if (
+            newX < 0 ||
+            newX >= 9 ||
+            newY < 0 ||
+            newY >= 9
+          ) {
+            continue;
+          }
+
+          if (arrayContainsArray(hintGroup, [newX, newY])) {
+            if (dX === 0 && dY === 1) {
+              borderStyle = {
+                ...borderStyle,
+                borderRight: 'none',
+                paddingRight: paddingValue, // We use padding to compensate for space
+              };
+            }
+            if (dX === 1 && dY === 0) {
+              borderStyle = {
+                ...borderStyle,
+                borderBottom: 'none',
+                paddingBottom: paddingValue,
+              };
+            }
+            if (dX === 0 && dY === -1) {
+              borderStyle = {
+                ...borderStyle,
+                borderLeft: 'none',
+                paddingLeft: paddingValue,
+              };
+            }
+            if (dX === -1 && dY === 0) {
+              borderStyle = {
+                ...borderStyle,
+                borderTop: 'none',
+                paddingTop: paddingValue,
+              };
+            }
+          }
+        }
+
         return <div
             key={`hint-${x}-${y}`}
             id={`hint-${x}-${y}`}
             className="hint"
+            style={{
+              ...borderStyle,
+            }}
           >
           </div>
       });
