@@ -5,6 +5,7 @@ export interface GameState {
   boardState: Record<string, number | null>;
   failCount: number;
   sudokuRoom: Room;
+  isTriggerValidation: boolean;
 }
 
 export interface Room {

@@ -28,6 +28,8 @@ function Room() {
       sudokuGameState: {}
     },
   });
+  const isTriggerValidation = data?.sudokuRoom[0]?.sudokuGameState[0]?.isTriggerValidation;
+
 
   /* Key event listeners for updating cell. */
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -77,7 +79,11 @@ function Room() {
     if (targetValue === undefined) {
       return;
     }
-    /* Set cell value display */
+    /* Set cell value display
+     * TODO: this might not be needed?
+     * since we update the db, the event will trigger and
+     * update the cell value for us anyway.
+    */
     targetCell.current.innerText = targetValue ? targetValue.toString() : '';
 
     updateGameState(targetCellCoordKey.current!, targetValue!);
@@ -118,6 +124,92 @@ function Room() {
       })
     ]);
   }
+
+  const triggerValidation = async () => {
+    if (!data) {
+      return;
+    }
+
+    const { sudokuRoom } = data;
+    const { sudokuGameState } = sudokuRoom[0];
+    const { id } = sudokuGameState[0];
+
+    await db.transact([
+      tx.sudokuGameState[id].update({
+        isTriggerValidation: true,
+      })
+    ]);
+
+    await db.transact([
+      tx.sudokuGameState[id].update({
+        isTriggerValidation: false,
+      })
+    ]);
+  }
+
+  /* Listen for trigger validation, and perform validation logic */
+  useEffect(() => {
+    if (!isTriggerValidation) {
+      return;
+    }
+
+
+    const sudokuRoom = data?.sudokuRoom[0];
+    const sudokuGameState = sudokuRoom.sudokuGameState[0];
+    if (!sudokuGameState || !sudokuRoom) {
+      return;
+    }
+
+    const { boardState } = sudokuGameState;
+    const { completedPuzzle } = sudokuRoom;
+
+    Object.entries(boardState).forEach(([coordKey, value]) => {
+      /* Modify UI to mark error */
+      if (!value) {
+        return;
+      }
+
+      if (value === completedPuzzle[coordKey]) {
+        return;
+      }
+
+      const [x, y] = coordKey.split(',').map(Number);
+      const cellDiv = document.getElementById(`cell-${x}-${y}`);
+      cellDiv!.style.color = 'red';
+    });
+
+  }, [isTriggerValidation])
+  /* We need to move the hint into the correct position AFTER the grid is rendered. */
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    const { hintGroups, hintValuesPerGroup } = data.sudokuRoom[0] || {};
+
+    for (const hintKey of Object.keys(hintGroups)) {
+      const hintGroup = hintGroups[hintKey];
+
+      /* Move each hint cell to the correct position */
+      hintGroup.forEach(([x, y], index) => {
+        const id = `cell-${x}-${y}`;
+        const cell = document.getElementById(id);
+        const rect = cell?.getBoundingClientRect();
+        const hint = document.getElementById(`hint-${x}-${y}`);
+        hint?.style.setProperty('top', `${rect?.top}px`);
+        hint?.style.setProperty('left', `${rect?.left}px`);
+      });
+
+      /* Move each hint value to the topmost, leftmost position of the hint group*/
+      const sortedHintGroup = hintGroup.toSorted();
+      const targetHintCell = sortedHintGroup[0];
+      const hintValueElement = document.getElementById(`hintVal-${hintKey}`);
+      const targetHintCellElement = document.getElementById(`hint-${targetHintCell[0]}-${targetHintCell[1]}`);
+      const rect = targetHintCellElement?.getBoundingClientRect();
+      hintValueElement?.style.setProperty('top', `${rect?.top}px`);
+      hintValueElement?.style.setProperty('left', `${rect?.left}px`);
+    }
+  }, [data]);
 
   /* Sample of creating a single hint box. */
   const renderHints = () => {
@@ -219,39 +311,6 @@ function Room() {
     return hintValues;
   }
 
-  /* We need to move the hint into the correct position AFTER the grid is rendered. */
-  useEffect(() => {
-    if (!data) {
-      return;
-    }
-
-    const { hintGroups, hintValuesPerGroup } = data.sudokuRoom[0] || {};
-
-    for (const hintKey of Object.keys(hintGroups)) {
-      const hintGroup = hintGroups[hintKey];
-
-      /* Move each hint cell to the correct position */
-      hintGroup.forEach(([x, y], index) => {
-        const id = `cell-${x}-${y}`;
-        const cell = document.getElementById(id);
-        const rect = cell?.getBoundingClientRect();
-        const hint = document.getElementById(`hint-${x}-${y}`);
-        hint?.style.setProperty('top', `${rect?.top}px`);
-        hint?.style.setProperty('left', `${rect?.left}px`);
-      });
-
-      /* Move each hint value to the topmost, leftmost position of the hint group*/
-      const sortedHintGroup = hintGroup.toSorted();
-      const targetHintCell = sortedHintGroup[0];
-      const hintValueElement = document.getElementById(`hintVal-${hintKey}`);
-      const targetHintCellElement = document.getElementById(`hint-${targetHintCell[0]}-${targetHintCell[1]}`);
-      const rect = targetHintCellElement?.getBoundingClientRect();
-      hintValueElement?.style.setProperty('top', `${rect?.top}px`);
-      hintValueElement?.style.setProperty('left', `${rect?.left}px`);
-    }
-  }, [data]);
-
-
   const renderGrid = () => {
     if (!data) {
       return;
@@ -301,9 +360,9 @@ function Room() {
     return divQuads;
   }
 
-
   return (<>
     <p> Room: { roomId } </p>
+    <button onClick={triggerValidation}>Validate</button>
     <div className='grid-container'>
       { renderGrid() }
       { renderHints() }
