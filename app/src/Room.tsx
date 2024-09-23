@@ -125,7 +125,7 @@ function Room() {
       return;
     }
 
-    const { hintGroups, hintValuesPerGroup } = data.sudokuRoom[0] || {};
+    const { hintGroups, hintValuesPerGroup } = data.sudokuRoom[0];
 
     /* Iterates through each hint group */
     const hintCellDivs = Object.keys(hintGroups).flatMap(hintKey => {
@@ -195,14 +195,28 @@ function Room() {
               ...borderStyle,
             }}
           >
-            { index === 0 ?
-              <p>{ hintValue }</p> :
-              null
-            }
           </div>
       });
     });
     return hintCellDivs;
+  }
+
+  const renderHintValues = () => {
+    if (!data) {
+      return;
+    }
+    const { hintGroups, hintValuesPerGroup } = data.sudokuRoom[0];
+    const hintValues = Object.keys(hintGroups).map((hintKey) => {
+      const hintValue = hintValuesPerGroup[hintKey];
+      return <p
+        key={`hintVal-${hintKey}`}
+        className="hint-value"
+        id={`hintVal-${hintKey}`}
+      >
+        {hintValue}
+      </p>
+    });
+    return hintValues;
   }
 
   /* We need to move the hint into the correct position AFTER the grid is rendered. */
@@ -214,9 +228,9 @@ function Room() {
     const { hintGroups, hintValuesPerGroup } = data.sudokuRoom[0] || {};
 
     for (const hintKey of Object.keys(hintGroups)) {
-      const hintValues = hintValuesPerGroup[hintKey];
       const hintGroup = hintGroups[hintKey];
 
+      /* Move each hint cell to the correct position */
       hintGroup.forEach(([x, y], index) => {
         const id = `cell-${x}-${y}`;
         const cell = document.getElementById(id);
@@ -225,6 +239,15 @@ function Room() {
         hint?.style.setProperty('top', `${rect?.top}px`);
         hint?.style.setProperty('left', `${rect?.left}px`);
       });
+
+      /* Move each hint value to the topmost, leftmost position of the hint group*/
+      const sortedHintGroup = hintGroup.toSorted();
+      const targetHintCell = sortedHintGroup[0];
+      const hintValueElement = document.getElementById(`hintVal-${hintKey}`);
+      const targetHintCellElement = document.getElementById(`hint-${targetHintCell[0]}-${targetHintCell[1]}`);
+      const rect = targetHintCellElement?.getBoundingClientRect();
+      hintValueElement?.style.setProperty('top', `${rect?.top}px`);
+      hintValueElement?.style.setProperty('left', `${rect?.left}px`);
     }
   }, [data]);
 
@@ -284,6 +307,7 @@ function Room() {
     <div className='grid-container'>
       { renderGrid() }
       { renderHints() }
+      { renderHintValues() }
     </div>
   </>)
 }

@@ -35,7 +35,7 @@
 
 .hint {
   position: absolute;
-  border: 2px dashed red;
+  border: 2px dashed lightpink;
   width: 32px;
   height: 32px;
   pointer-events: none;
@@ -43,12 +43,16 @@
   transform: translate(2px, 2px);
 }
 
-.hint > p {
-  font-size: 10px;
-  position: relative;
+.hint-value {
+  font-size: 12px;
+  font-weight: bold;
+  position: absolute;
+  color: lightsalmon;
   top: 0px;
   left: 0px;
+  transform: translate(-5px, -5px);
   margin: 0;
+  z-index: 10;
 }
 
 /* Chrome, Safari, Edge, Opera */
