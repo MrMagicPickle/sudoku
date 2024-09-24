@@ -31,6 +31,11 @@ function Room() {
   const isTriggerValidation = data?.sudokuRoom[0]?.sudokuGameState[0]?.isTriggerValidation;
 
 
+  /* Handle puzzle completed logic */
+  const handlePuzzleCompleted = () => {
+    alert('Puzzle completed!');
+  }
+
   /* Key event listeners for updating cell. */
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!targetCell.current) {
@@ -84,7 +89,8 @@ function Room() {
      * since we update the db, the event will trigger and
      * update the cell value for us anyway.
     */
-    targetCell.current.innerText = targetValue ? targetValue.toString() : '';
+    // targetCell.current.innerText = targetValue ? targetValue.toString() : '';
+    // targetCell.current.style.color = 'black';
 
     updateGameState(targetCellCoordKey.current!, targetValue!);
   }
@@ -153,7 +159,6 @@ function Room() {
       return;
     }
 
-
     const sudokuRoom = data?.sudokuRoom[0];
     const sudokuGameState = sudokuRoom.sudokuGameState[0];
     if (!sudokuGameState || !sudokuRoom) {
@@ -163,6 +168,7 @@ function Room() {
     const { boardState } = sudokuGameState;
     const { completedPuzzle } = sudokuRoom;
 
+    let isPuzzleCompleted = true;
     Object.entries(boardState).forEach(([coordKey, value]) => {
       /* Modify UI to mark error */
       if (!value) {
@@ -176,8 +182,13 @@ function Room() {
       const [x, y] = coordKey.split(',').map(Number);
       const cellDiv = document.getElementById(`cell-${x}-${y}`);
       cellDiv!.style.color = 'red';
+
+      isPuzzleCompleted = false;
     });
 
+    if (isPuzzleCompleted) {
+      handlePuzzleCompleted();
+    }
   }, [isTriggerValidation])
   /* We need to move the hint into the correct position AFTER the grid is rendered. */
   useEffect(() => {
@@ -350,6 +361,7 @@ function Room() {
               id={`cell-${cell[1]}-${cell[2]}`}
               className="cell"
               key={`cell-${index}`}
+              style={{ color: "black"}}
             >
               { cell[0] }
             </div>
