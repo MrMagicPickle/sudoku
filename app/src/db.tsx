@@ -1,8 +1,11 @@
 import { init } from "@instantdb/core";
 
+export type BoardStateValue = [number|null, 'valid' | 'invalid'];
+
+export type BoardState = Record<string, BoardStateValue>;
 export interface GameState {
   id: string;
-  boardState: Record<string, number | null>;
+  boardState: BoardState;
   failCount: number;
   sudokuRoom: Room;
   isTriggerValidation: boolean;

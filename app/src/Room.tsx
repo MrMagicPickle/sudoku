@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { APP_ID, Schema } from "./db";
+import { APP_ID, BoardStateValue, Schema } from "./db";
 import { useEffect, useRef } from "react";
 import { init, tx } from "@instantdb/react";
 import './Sudoku.css';
@@ -92,7 +92,7 @@ function Room() {
     // targetCell.current.innerText = targetValue ? targetValue.toString() : '';
     // targetCell.current.style.color = 'black';
 
-    updateGameState(targetCellCoordKey.current!, targetValue!);
+    updateGameState(targetCellCoordKey.current!, [targetValue!, 'valid']);
   }
 
   const setTargetCell = (x: number, y: number) => {
@@ -113,7 +113,7 @@ function Room() {
     targetCell.current = null;
   }
 
-  const updateGameState = (coordKey: string, value: number | null) => {
+  const updateGameState = (coordKey: string, value: BoardStateValue) => {
     if (!data) {
       return;
     }
@@ -126,6 +126,24 @@ function Room() {
       tx.sudokuGameState[id].merge({
         boardState: {
           [coordKey]: value,
+        }
+      })
+    ]);
+  }
+
+  const bulkUpdateGameState = (cellsToUpdate: Record<string, [number|null, 'valid' | 'invalid']>) => {
+    if (!data) {
+      return;
+    }
+
+    const { sudokuRoom } = data;
+    const { sudokuGameState } = sudokuRoom[0];
+    const { id } = sudokuGameState[0];
+
+    db.transact([
+      tx.sudokuGameState[id].merge({
+        boardState: {
+          ...cellsToUpdate,
         }
       })
     ]);
@@ -169,27 +187,32 @@ function Room() {
     const { completedPuzzle } = sudokuRoom;
 
     let isPuzzleCompleted = true;
+    const cellsToUpdate: Record<string, [number|null, 'valid'|'invalid']> = {};
     Object.entries(boardState).forEach(([coordKey, value]) => {
-      /* Modify UI to mark error */
-      if (!value) {
+      if (!value || !value[0]) {
         return;
       }
 
-      if (value === completedPuzzle[coordKey]) {
+      if (value[0] === completedPuzzle[coordKey]) {
         return;
       }
 
       const [x, y] = coordKey.split(',').map(Number);
-      const cellDiv = document.getElementById(`cell-${x}-${y}`);
-      cellDiv!.style.color = 'red';
+
+      /* Update game state to mark invalid cells. */
+      cellsToUpdate[coordKey] = [value[0], 'invalid'];
 
       isPuzzleCompleted = false;
     });
 
+    /* Bulk update game state */
+    bulkUpdateGameState(cellsToUpdate);
+
     if (isPuzzleCompleted) {
       handlePuzzleCompleted();
     }
-  }, [isTriggerValidation])
+  }, [isTriggerValidation]);
+
   /* We need to move the hint into the correct position AFTER the grid is rendered. */
   useEffect(() => {
     if (!data) {
@@ -331,9 +354,8 @@ function Room() {
     const { sudokuGameState } = sudokuRoom[0];
     const { boardState } = sudokuGameState[0];
 
-
     /* Convert to quadrants */
-    const quadrantsToCells: Record<string, (number | null)[][]> = {};
+    const quadrantsToCells: Record<string, [number|null, number, number, 'valid'|'invalid'][]> = {};
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
         // Ranges from [0..2]
@@ -341,12 +363,13 @@ function Room() {
         const quadCol = Math.floor(j / 3);
         const cellsInQuad = quadrantsToCells[`${quadRow}-${quadCol}`];
 
-        const cellNumber = boardState[`${i},${j}`];
+        const cellNumber = boardState[`${i},${j}`][0];
+        const cellValidState = boardState[`${i},${j}`][1];
         const cellX = i;
         const cellY = j;
         quadrantsToCells[`${quadRow}-${quadCol}`] = cellsInQuad ?
-          [...cellsInQuad, [cellNumber, cellX, cellY]] :
-          [[cellNumber, cellX, cellY]];
+          [...cellsInQuad, [cellNumber, cellX, cellY, cellValidState]] :
+          [[cellNumber, cellX, cellY, cellValidState]];
       }
     }
 
@@ -361,7 +384,7 @@ function Room() {
               id={`cell-${cell[1]}-${cell[2]}`}
               className="cell"
               key={`cell-${index}`}
-              style={{ color: "black"}}
+              style={{ color: cell[3] === 'valid' ? "black" : 'red'}}
             >
               { cell[0] }
             </div>

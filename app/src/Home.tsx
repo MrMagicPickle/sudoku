@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { isCommaListExpression } from "typescript";
 import getDb from "./db";
 import { buildHints, makepuzzle, solvepuzzle } from "./sudoku-logic";
-import { mapPuzzleArrayToPuzzleDict } from "./mapper";
+import { createInitialPuzzleDictFromArr, mapPuzzleArrayToPuzzleDict } from "./mapper";
 
 /**
  * Have a UI to create sudoku room.
@@ -51,7 +51,7 @@ function Home() {
 
     /* Map array puzzle to 81 entries dictionary. */
     const completedPuzzleDict = mapPuzzleArrayToPuzzleDict(completedPuzzle);
-    const initialPuzzleStateDict = mapPuzzleArrayToPuzzleDict(initialPuzzleState);
+    const initialPuzzleStateDict = createInitialPuzzleDictFromArr(initialPuzzleState);
 
     await db.transact(
       [
