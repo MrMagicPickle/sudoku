@@ -189,7 +189,8 @@ function Room() {
     let isPuzzleCompleted = true;
     const cellsToUpdate: Record<string, [number|null, 'valid'|'invalid']> = {};
     Object.entries(boardState).forEach(([coordKey, value]) => {
-      if (!value || !value[0]) {
+      if (!value[0]) {
+        isPuzzleCompleted = false;
         return;
       }
 
