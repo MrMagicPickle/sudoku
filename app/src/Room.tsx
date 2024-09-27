@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { APP_ID, BoardStateValue, Schema } from "./db";
+import { APP_ID, BoardCellState, BoardStateValue, Schema } from "./db";
 import { useEffect, useRef } from "react";
 import { init, tx } from "@instantdb/react";
 import './Sudoku.css';
@@ -356,7 +356,7 @@ function Room() {
     const { boardState } = sudokuGameState[0];
 
     /* Convert to quadrants */
-    const quadrantsToCells: Record<string, [number|null, number, number, 'valid'|'invalid'][]> = {};
+    const quadrantsToCells: Record<string, [number|null, number, number, BoardCellState][]> = {};
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
         // Ranges from [0..2]
@@ -385,7 +385,11 @@ function Room() {
               id={`cell-${cell[1]}-${cell[2]}`}
               className="cell"
               key={`cell-${index}`}
-              style={{ color: cell[3] === 'valid' ? "black" : 'red'}}
+              style={{
+                color: cell[3] === 'invalid' ? "red" : 'black',
+                fontWeight: cell[3] === 'initial' ? "bold" : undefined,
+                pointerEvents: cell[3] === 'initial' ? 'none' : 'auto',
+              }}
             >
               { cell[0] }
             </div>

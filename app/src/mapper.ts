@@ -21,7 +21,8 @@ const createInitialPuzzleDictFromArr = (puzzleArray: number[]): BoardState => {
     for (let j = 0; j<9; j++) {
       /* Have to +1 here bc the puzzle generator generates numbers from [0..8] */
       const sudokuNumber = (puzzleArray[count] === null) ?  null : puzzleArray[count] + 1;
-      puzzleDict[`${i},${j}`] = [sudokuNumber, 'valid'];
+      const cellState = sudokuNumber === null ? 'valid' : 'initial';
+      puzzleDict[`${i},${j}`] = [sudokuNumber, cellState];
       count += 1;
     }
   }

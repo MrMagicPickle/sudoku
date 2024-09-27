@@ -1,8 +1,11 @@
 import { init } from "@instantdb/core";
 
-export type BoardStateValue = [number|null, 'valid' | 'invalid'];
+export type BoardStateValue = [number|null, BoardCellState];
 
 export type BoardState = Record<string, BoardStateValue>;
+
+export type BoardCellState = 'valid' | 'invalid' | 'initial' ;
+
 export interface GameState {
   id: string;
   boardState: BoardState;
