@@ -4,6 +4,7 @@ import { isCommaListExpression } from "typescript";
 import getDb from "./db";
 import { buildHints, makepuzzle, solvepuzzle } from "./sudoku-logic";
 import { createInitialPuzzleDictFromArr, mapPuzzleArrayToPuzzleDict } from "./mapper";
+import { FormEvent, useState } from "react";
 
 /**
  * Have a UI to create sudoku room.
@@ -37,9 +38,9 @@ const db = init<Schema>({ appId: APP_ID });
 
 function Home() {
   const navigate = useNavigate();
+  const [isSelectedJoinRoom, setIsSelectedJoinRoom] = useState(false);
 
   const createRoom = async () => {
-    console.log('Create room');
     const roomId = id();
     /* Create puzzle and hints */
     const completedPuzzle = solvepuzzle(Array(81).fill(null))!;
@@ -70,12 +71,51 @@ function Home() {
       ]
     );
     navigate(`/room/${roomId}`);
+  }
 
+  const joinRoom = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target as HTMLFormElement)
+    const formJson = Object.fromEntries(formData.entries());
+    const roomId = formJson['roomId'];
+    navigate(`/room/${roomId}`);
+  }
+
+  const selectJoinRoom = () => {
+    setIsSelectedJoinRoom(true);
+  }
+
+  const renderJoinRoom = () => {
+
+    return <div className="join-Room-container">
+        <button onClick={() => setIsSelectedJoinRoom(false)}> Back </button>
+
+        <form onSubmit={joinRoom}>
+          <label> Join Room
+            <input name="roomId" placeholder="Enter Room ID"></input>
+          </label>
+          <button type="submit"> Join </button>
+        </form>
+      </div>
   }
 
   return (
     <>
-      <button onClick={createRoom}> Create Room</button>
+      <div className={'center-container'}>
+        <h1>
+          Multiplayer <br></br> Sudoku
+        </h1>
+        <div className={'input-container'}>
+          <button onClick={createRoom}> Create Room</button>
+
+          <button onClick={selectJoinRoom}> Join Room</button>
+          {
+            isSelectedJoinRoom ? renderJoinRoom() : null
+          }
+        </div>
+      </div>
+
     </>
   )
 }
