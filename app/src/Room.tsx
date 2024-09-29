@@ -277,7 +277,7 @@ function Room() {
         ];
 
         let borderStyle = {};
-        const paddingValue = '3px';
+        const paddingValue = window.screen.width > 600 ? '3px' : '1px';
         for (const [dX, dY] of dirs) {
           const [newX, newY] = [x+dX, y+dY];
           if (

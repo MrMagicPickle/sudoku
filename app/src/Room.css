@@ -135,3 +135,47 @@ input[type=number] {
   background-color: lightblue;
   outline: none;
 }
+
+
+@media screen and (max-width: 600px) {
+  .cell {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+  }
+
+  .quadrant {
+    width: 90px;
+    height: 90px;
+  }
+
+  .grid-container {
+    width: 282px;
+    height: 282px;
+  }
+
+  .hint {
+    width: 24px;
+    height: 24px;
+    border-width: 1px;
+    transform: translate(2px, 2px);
+  }
+
+  .hint-value {
+    font-size: 10px;
+    width: 10px;
+  }
+
+  .controls-container {
+    width: 300px;
+  }
+
+  .controls-container > button {
+    font-size: 18px;
+  }
+
+  .heading-container {
+    font-size: 18px;
+    margin-bottom: 50px;
+  }
+}
