@@ -416,7 +416,7 @@ function Room() {
     </div>
     <div className="content-container">
       <div className="controls-container">
-        <button onClick={triggerValidation}>Validate</button>
+        <button onClick={triggerValidation}>Check</button>
       </div>
 
       <div className='grid-container'>
