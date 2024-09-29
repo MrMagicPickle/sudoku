@@ -384,9 +384,28 @@ function Room() {
     const divQuads = Object.entries(quadrantsToCells).map(([key, value], quadIndex) => {
       return <div className="quadrant" key={`quad-${quadIndex}`}>
         {
+          // value.map((cell, index) => {
+          //   return <div
+          //     tabIndex={quadIndex * 9 + index}
+          //     onBlur={clearTargetCell}
+          //     onClick={() => setTargetCell(cell[1]!, cell[2]!)}
+          //     id={`cell-${cell[1]}-${cell[2]}`}
+          //     className="cell"
+          //     key={`cell-${index}`}
+          //     style={{
+          //       color: cell[3] === 'invalid' ? "red" : 'black',
+          //       fontWeight: cell[3] === 'initial' ? "bold" : undefined,
+          //       pointerEvents: cell[3] === 'initial' ? 'none' : 'auto',
+          //     }}
+          //   >
+          //     { cell[0] }
+          //   </div>
+          // })
           value.map((cell, index) => {
-            return <div
-              tabIndex={quadIndex * 9 + index}
+            return <input
+              type="number"
+              value={cell[0] || ''}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => { e.preventDefault() }}
               onBlur={clearTargetCell}
               onClick={() => setTargetCell(cell[1]!, cell[2]!)}
               id={`cell-${cell[1]}-${cell[2]}`}
@@ -398,8 +417,7 @@ function Room() {
                 pointerEvents: cell[3] === 'initial' ? 'none' : 'auto',
               }}
             >
-              { cell[0] }
-            </div>
+            </input>
           })
         }
       </div>
