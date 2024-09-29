@@ -2,18 +2,15 @@ import { useParams } from "react-router-dom";
 import { APP_ID, BoardCellState, BoardStateValue, Schema } from "./db";
 import { useEffect, useRef } from "react";
 import { init, tx } from "@instantdb/react";
-import './Sudoku.css';
-import { debounce } from "./debounce";
+import './Room.css';
 import { arrayContainsArray } from "./utils";
 
 // const db = getDb();
 const db = init<Schema>({ appId: APP_ID });
 
-/* used for debouncing update game state calls */
-let timeoutId: any = undefined;
-
 function Room() {
   const { roomId } = useParams();
+
   const targetCell = useRef<HTMLElement | null>(null);
   /* Key format is 'x,y' */
   const targetCellCoordKey = useRef<string | null>(null);
@@ -30,6 +27,16 @@ function Room() {
   });
   const isTriggerValidation = data?.sudokuRoom[0]?.sudokuGameState[0]?.isTriggerValidation;
 
+  const copyRoomId = () => {
+    navigator.clipboard.writeText(roomId || '');
+    const tooltip = document.getElementById("myTooltip");
+    tooltip!.innerHTML = "Copied to clipboard!";
+  }
+
+  const resetTooltip = () => {
+    const tooltip = document.getElementById("myTooltip");
+    tooltip!.innerHTML = "Copy Room ID";
+  }
 
   /* Handle puzzle completed logic */
   const handlePuzzleCompleted = () => {
@@ -270,7 +277,7 @@ function Room() {
         ];
 
         let borderStyle = {};
-        const paddingValue = '2px';
+        const paddingValue = '4px';
         for (const [dX, dY] of dirs) {
           const [newX, newY] = [x+dX, y+dY];
           if (
@@ -401,12 +408,22 @@ function Room() {
   }
 
   return (<>
-    <p> Room: { roomId } </p>
-    <button onClick={triggerValidation}>Validate</button>
-    <div className='grid-container'>
-      { renderGrid() }
-      { renderHints() }
-      { renderHintValues() }
+    <div className="heading-container">
+      <h2> Room ID:
+        <code id="room-id" onClick={copyRoomId} onMouseOut={resetTooltip}>{ roomId }</code>
+        <span className="tooltiptext" id="myTooltip">Copy Room ID</span>
+      </h2>
+    </div>
+    <div className="content-container">
+      <div className="controls-container">
+        <button onClick={triggerValidation}>Validate</button>
+      </div>
+
+      <div className='grid-container'>
+        { renderGrid() }
+        { renderHints() }
+        { renderHintValues() }
+      </div>
     </div>
   </>)
 }

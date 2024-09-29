@@ -1,0 +1,137 @@
+.heading-container {
+  display: flex;
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 100px;
+}
+
+#room-id {
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: -10%;
+  left: 50%;
+  margin-left: -75px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.heading-container:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.controls-container {
+  width: 740px;
+}
+
+.controls-container > button {
+  margin-left: auto;
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+  border: 2px solid #fff;
+}
+
+.controls-container > button:hover {
+  border-style: dashed;
+  border-color: black;
+}
+
+.grid-container {
+  margin-top: 20px;
+  display: inline-flex;
+  border: 4px solid black;
+  width: 732px;
+  height: 732px;
+  flex-wrap: wrap;
+}
+
+.quadrant {
+  border: 2px solid black;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cell {
+  border: 1px solid black;
+  box-sizing: border-box;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  caret-color: transparent;
+  font-size: 32px;
+}
+
+.hint {
+  position: absolute;
+  border: 3px dashed darkcyan;
+  width: 70px;
+  height: 70px;
+
+  pointer-events: none;
+  /* Use translate to center hint boxes */
+  transform: translate(2px, 2px);
+}
+
+.hint-value {
+  font-size: 20px;
+  position: absolute;
+  color: lightseagreen;
+  top: 0px;
+  left: 0px;
+  transform: translate(0px, 0px);
+  margin: 0;
+  padding-top: 2px;
+  padding-bottom: 4px;
+  z-index: 10;
+  background: white;
+  line-height: 0.5;
+  width: 24px;
+  text-align: center;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.cell:focus {
+  background-color: lightblue;
+  outline: none;
+}
