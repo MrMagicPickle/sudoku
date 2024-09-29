@@ -44,14 +44,15 @@ function Home() {
     /* Create puzzle and hints */
     const completedPuzzle = solvepuzzle(Array(81).fill(null))!;
     const initialPuzzleState = makepuzzle(completedPuzzle);
-    const {
-      hintGroups,
-      hintValuesPerGroup,
-    } = buildHints(completedPuzzle);
 
     /* Map array puzzle to 81 entries dictionary. */
     const completedPuzzleDict = mapPuzzleArrayToPuzzleDict(completedPuzzle);
     const initialPuzzleStateDict = createInitialPuzzleDictFromArr(initialPuzzleState);
+
+    const {
+      hintGroups,
+      hintValuesPerGroup,
+    } = buildHints(completedPuzzle, initialPuzzleStateDict);
 
     await db.transact(
       [

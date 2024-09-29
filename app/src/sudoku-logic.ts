@@ -2,6 +2,9 @@
 // Copyright (c) 2011 Blagovest Dachev.  All rights reserved.
 //
 // This is a port of David Bau's python  implementation:
+
+import { BoardState } from "./db";
+
 // http://davidbau.com/archives/2006/09/04/sudoku_generator.html
 function makepuzzle(board: number[]) {
   var puzzle = [];
@@ -461,7 +464,15 @@ const buildGridFromPuzzle = (puzzle: number[]): number[][] => {
   return grid;
 }
 
-const buildHints = (puzzle: number[]): {
+/**
+ *
+ * TODO: Cleanup
+ * 1. Directly accept 2D grid instead of 1D puzzle
+ */
+const buildHints = (
+  puzzle: number[],
+  initialState: BoardState,
+): {
   hintGroups: Record<string, number[][]>,
   hintValuesPerGroup: Record<string, number>,
 } => {
@@ -505,7 +516,16 @@ const buildHints = (puzzle: number[]): {
     let randomInt = Math.floor(Math.random() * 81);
     let [x, y] = [getRow(randomInt), getCol(randomInt)];
 
-    while (`${x},${y}` in hintGroups) {
+    /*
+     * Continue to randomise until its:
+     * 1. Not a coord that is already in a hint group.
+     * 2. Not a coord that is part of the initial state.
+     */
+    while (
+      `${x},${y}` in hintGroups ||
+      // TODO: Check that this coord is not null in the initial state.
+      initialState[`${x},${y}`][0] !== null
+    ) {
       randomInt = Math.floor(Math.random() * 81);
       [x, y] = [getRow(randomInt), getCol(randomInt)];
     }
