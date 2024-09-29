@@ -96,7 +96,6 @@
   border: 3px dashed darkcyan;
   width: 70px;
   height: 70px;
-
   pointer-events: none;
   /* Use translate to center hint boxes */
   transform: translate(2px, 2px);
